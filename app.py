@@ -18,3 +18,13 @@ def notify():
     r = requests.post(PROVIDER_URL, json=build_payload(request.get_json(force=True)),
                       headers={"Authorization": f"Bearer {key}"}, timeout=10)
     return jsonify({"status": r.status_code})
+
+
+def with_retry(fn, attempts=3):
+    last = None
+    for _ in range(attempts):
+        try:
+            return fn()
+        except Exception as e:  # noqa: BLE001
+            last = e
+    raise last
